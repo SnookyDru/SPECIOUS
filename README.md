@@ -87,8 +87,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For more information, please contact [pvt.dhruvkumar@gmail.com](mailto:pvt.dhruvkumar@gmail.com).
 
----
-
-Feel free to customize this `README.md` to better fit your project's specific details and requirements.
-
-[1]: https://arxiv.org/html/2405.19600v1?utm_source=chatgpt.com "Do spectral cues matter in contrast-based graph self-supervised learning?"
