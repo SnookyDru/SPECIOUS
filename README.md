@@ -2,6 +2,8 @@
 
 **Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates**
 
+![Web 1920 – 1](https://github.com/user-attachments/assets/50e21349-9056-4007-813a-e6eb5ef23a20)
+
 SPECIOUS is a universal, inference-time defence mechanism designed to protect visual artworks from unauthorized AI-driven style mimicry. It generates imperceptible perturbations in the frequency domain, targeting the luminance (Y) channel, to disrupt feature embeddings across various surrogate models without compromising visual quality
 
 ---
