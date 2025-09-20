@@ -231,19 +231,19 @@ if uploaded:
     st.subheader("🖼️ Original vs Perturbed Image")
     col1, col2 = st.columns(2)
     with col1:
-        st.image(to_display(tensor.squeeze(0)), caption="Original Image", use_container_width=True)
+        st.image(to_display(tensor.squeeze(0)), caption="Original Image", width='stretch')
     with col2:
-        st.image(to_display(perturbed), caption="Perturbed Image", use_container_width=True)
+        st.image(to_display(perturbed), caption="Perturbed Image", width='stretch')
 
     st.subheader("🔎 Intermediate Visualizations")
     cols = st.columns(3)
     with cols[0]:
-        st.image(to_display(Y), caption="Luminance (Y)", use_container_width=True)
-        st.image(to_display(spec_shifted.abs()), caption="FFT Shifted Magnitude", use_container_width=True)
+        st.image(to_display(Y), caption="Luminance (Y)", width='stretch')
+        st.image(to_display(spec_shifted.abs()), caption="FFT Shifted Magnitude", width='stretch')
     with cols[1]:
-        st.image(to_display(mask.unsqueeze(0)), caption="Frequency Mask", use_container_width=True)
-        st.image(to_display(spec_mask.abs()), caption="Masked Spectrum", use_container_width=True)
+        st.image(to_display(mask.unsqueeze(0)), caption="Frequency Mask", width='stretch')
+        st.image(to_display(spec_mask.abs()), caption="Masked Spectrum", width='stretch')
     with cols[2]:
-        st.image(to_display(Yhf), caption="High-Frequency Y (Yhf)", use_container_width=True)
-        st.image(to_display(deltaY), caption="Perturbation (ΔY)", use_container_width=True)
-        st.image(to_display(Y_adv), caption="Adversarial Y", use_container_width=True)
+        st.image(to_display(Yhf), caption="High-Frequency Y (Yhf)", width='stretch')
+        st.image(to_display(deltaY), caption="Perturbation (ΔY)", width='stretch')
+        st.image(to_display(Y_adv), caption="Adversarial Y", width='stretch')
