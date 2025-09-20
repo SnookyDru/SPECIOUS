@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SPECIOUS — Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates</title>
+  <style>
+    body{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; line-height:1.6; color:#111; margin:0; padding:0; background:#f8fafc}
+    .container{max-width:980px;margin:36px auto;padding:28px;background:#fff;border-radius:10px;box-shadow:0 6px 30px rgba(12,24,40,0.08)}
+    header{border-bottom:1px solid #e6eef6;padding-bottom:18px;margin-bottom:16px}
+    h1{font-size:28px;margin:0 0 6px}
+    h2{font-size:20px;color:#0b4a6f;margin-top:28px}
+    h3{font-size:16px;color:#0b3b57;margin-top:20px}
+    p{margin:10px 0}
+    pre{background:#0b3b57;color:#fff;padding:12px;border-radius:6px;overflow:auto}
+    .toc{background:#f1f8fb;padding:12px;border-radius:6px;margin-bottom:18px}
+    .figure{border:1px dashed #e6eef6;padding:12px;margin:10px 0;text-align:center;color:#556}
+    table{border-collapse:collapse;width:100%;margin:12px 0}
+    th,td{border:1px solid #e6eef6;padding:8px;text-align:left}
+    footer{border-top:1px solid #e6eef6;margin-top:24px;padding-top:12px;color:#556;font-size:13px}
+    .ref-list{columns:2; column-gap:24px}
+    code{background:#f3f6f9;padding:2px 6px;border-radius:4px}
+    img {max-width: 100%; height: auto; display: block; margin: auto;}
+    ol.references {
+        list-style: none; /* remove default numbers */
+        counter-reset: ref; /* start custom counter */
+        padding-left: 0;
+    }
+    ol.references li {
+        counter-increment: ref; /* increase counter for each <li> */
+        margin-bottom: 8px;
+    }
+    ol.references li::before {
+        content: "[" counter(ref) "] "; /* format: [1], [2], etc */
+        font-weight: bold;
+    }
+    .authors {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .author {
+      margin: 5px 0;
+    }
+    .affiliation {
+      font-size: 14px;
+      color: #555;
+    }
+    .email {
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 style="text-align: center;">SPECIOUS — Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates</h1>
+      <h2 style="text-align: center;">
+        <a href="https://github.com/SnookyDru/SPECIOUS" target="_blank">[Github]</a>
+        &nbsp;&nbsp;&nbsp;
+        <a href="https://your-demo-link.com" target="_blank">[Working Demo]</a>
+        </h2>
+      <div class="authors">
+            <div class="author">
+            <strong>Dhruv Kumar</strong><br>
+            <span class="affiliation">Department of Artificial Intelligence and Machine Learning<br>USAR, GGSIPU EDC, Delhi</span><br>
+            <span class="email">pvt.dhruvkumar@gmail.com</span>
+            </div>
+            <div class="author">
+            <strong>Harshveer Singh</strong><br>
+            <span class="affiliation">Department of Artificial Intelligence and Machine Learning<br>USAR, GGSIPU EDC, Delhi</span><br>
+            <span class="email">author2@abc.ac.in</span>
+            </div>
+            <div class="author">
+            <strong>Deepanshu Singh</strong><br>
+            <span class="affiliation">Department of Artificial Intelligence and Machine Learning<br>USAR, GGSIPU EDC, Delhi</span><br>
+            <span class="email">author3@def.org</span>
+            </div>
+        </div>
+      <h2>Abstract</h2>
+      <p>Generative AI models trained on large uncurated image corpora often appropriate artists’ copyrighted work without consent. We introduce <strong>SPECIOUS</strong> (Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates), a universal, multi-model defensive technique that embeds imperceptible high-frequency perturbations into the luminance (Y) channel of YCbCr representations. At inference time, these perturbations remain invisible to humans but systematically degrade feature embeddings across multiple surrogate models (ResNet-50, CLIP ViT-B/32, etc.), preventing downstream generative or classification tasks from reproducing the protected style. Our U-Net-based generator works in the Fourier domain, with a learnable high-pass mask, while our novel SpeciousLoss simultaneously minimizes LPIPS perceptual distance and maximizes the surrogate model’s feature distortion under a strict perceptual threshold. We demonstrate that S.P.E.C.I.O.U.S. effectively fools zero-shot predictions and classifications, generalizes across resolutions, and preserves visual fidelity.</p>
+    </header>
+
+    <section class="toc">
+      <strong>Contents</strong>
+      <ol>
+        <li>Introduction</li>
+        <li>Literature Survey</li>
+        <li>Materials and Proposed Methodology</li>
+        <li>Experiments & Results</li>
+        <li>Conclusion</li>
+        <li>References</li>
+        <li>Annexure</li>
+      </ol>
+    </section>
+
+    <section id="introduction">
+      <h2>Chapter 1 — Introduction</h2>
+      <h3>Background and Problem Statement</h3>
+      <p>The recent “Ghiblification” phenomenon, more like a social media trend—in which users transform images into a Studio Ghibli style via ChatGPT’s image model [1][2][3]—has reignited urgent debates about copyright and artist rights in AI-generated art. Studio Ghibli itself has weighed legal action against OpenAI [4], but trademark and copyright statutes offer only partial recourse because “visual style” per se often falls outside traditional infringement claims. Meanwhile, AI companies continue to scrape public and private image repositories—often including copyrighted works—without artists’ consent [5][6], allowing models like DALL·E 2, Midjourney, Stable Diffusion, etc, to reproduce distinctive styles in seconds. Authors and illustrators worldwide report moral injury, as their life’s work is co-opted without credit or compensation [7].</p>
+
+      <p>Adversarial perturbations offer a pathway for self-defence [8]: small, model-imperceptible modifications that disrupt downstream inference. Empirical studies demonstrate that such perturbations concentrate in high-frequency components (sharp edges and textures)—that deep networks exploit to build feature representations [9][10], while leaving low-frequency content (soft edges and textures) intact. Furthermore, perturbations applied in the YCbCr color space show that changes in chrominance (Cb, Cr) are less salient to humans, but the most effective adversarial distortions actually arise in the luminance (Y) channel [11].</p>
+
+      <h3>Limitations of Existing Defences</h3>
+      <p>Although tools like Glaze and Nightshade represent important steps toward protecting artists, they exhibit several key shortcomings that hinder their broader applicability:</p>
+      <ul>
+        <li><strong>Model-Specific Targeting:</strong> Both Glaze and Nightshade focus narrowly on Stable Diffusion–style pipelines rather than offering a general defence. Glaze’s perturbations are designed specifically to mislead diffusion-based generators (e.g., Stable Diffusion or Midjourney) and may not transfer to other architectures or tasks [12][13]. Nightshade likewise tailors its poisoning attack to prompt-specific vulnerabilities in text-to-image diffusion models, requiring intimate knowledge of a single target model’s training data and concept sparsity [14]. In contrast, SPECIOUS can incorporate any number of surrogate models—from ResNet-50 classifiers to CLIP encoders—via its dynamic loss function, making it universal across architectures [15].</li>
+        <li><strong>Dependence on a Target Label:</strong> Nightshade’s prompt-specific poisoning hinges on choosing exactly which concept or class to corrupt [16]. You must supply a target label that directs the model’s latent representation into an unwanted state. Glaze similarly bakes in perturbations aimed at derailing the model’s style mimicry for a predefined artist. SPECIOUS, however, functions as a label-agnostic perturbation engine [17]: it crafts universal changes that degrade feature embeddings broadly, without needing to specify any particular downstream label or prompt.</li>
+        <li><strong>Single-Metric Penalty:</strong> Both prior defences apply only an LPIPS penalty [18] to control perceptual visibility, so they minimize human-noticeable changes but do not actively push feature representations apart. SPECIOUS’s SpeciousLoss, by contrast, is a bi-objective function: it simultaneously minimizes LPIPS and maximizes distortion in multiple surrogate feature spaces. This balanced approach guarantees both stealth and efficacy, rather than sacrificing one for the other. </li>
+        <li><strong>Neglect of Y-Channel Perturbations:</strong> Glaze and Nightshade operate solely in the RGB pixel domain [19], dispersing small cloaks uniformly across red, green, and blue channels. Yet perceptual and adversarial research shows that the luminance (Y) channel in YCbCr carries the most potent perturbations—human vision is less sensitive to chrominance, but deep networks leverage brightness variations heavily. SPECIOUS exploits this by concentrating all changes in the Y channel, preserving color fidelity while attacking the model-relevant signal.</li>
+        <li><strong>Overlooking Frequency-Domain Structure:</strong> Glaze nor Nightshade uses frequency-domain filtering [20], neglecting the fact that adversarial deltas predominantly occupy high-frequency bands—edges and textures—that classification and generative models rely on. SPECIOUS embeds a learnable high-pass mask in the Fourier domain, adaptively isolating precisely those spectral regions where perturbations inflict maximum damage, ensuring minimal perceptual impact.</li>
+      </ul>
+      <p>Taken together, these limitations underscore why a universal, multi-model defence—one that works at inference time, requires no specific label, balances perceptual and feature distortion, targets only the Y channel, and leverages frequency analysis—is essential for protecting creative content in the age of generative AI. </p>
+      
+      <h3>Our Approach: SPECIOUS</h3>
+      <p>We propose SPECIOUS (Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates), integrating four key innovations:</p>
+      <ol>
+        <li><strong>Frequency-Domain Perturbation on Y Channel:</strong> We transform only the Y channel into the Fourier domain [11][21], apply a learnable high-pass mask to isolate sharp edges and textures, then invert back to the spatial domain. This focuses perturbations on features that both classification (ResNet-50) and zero-shot (CLIP ViT-B/32) models rely on.</li>
+        <li><strong>U-Net Generator with FFT/IFFT Blocks:</strong> A bespoke U-Net architecture [22] ingests the high-frequency component and outputs a single-channel perturbation, ensuring the capacity to learn complex spatial patterns while maintaining low inference cost.</li>
+        <li><strong>Specious Loss: Joint Perceptual and Feature Distortion Objective:</strong> To train this, we designed Specious Loss, which balances two goals:
+        <ol>
+            <li><b>Perceptual fidelity</b>, by minimizing LPIPS (a learned measure of human-perceived similarity) under a strict threshold.</li>
+            <li><b>Model disruption</b>, by maximizing the difference in feature representations extracted by several pre-trained networks.</li>
+        </ol>
+        An exponential formulation keeps the loss positive and smoothly balances these pressures, while a penalty term ensures we never exceed our perceptual budget.</li>
+        <li><strong>Universal Multi-Model Defence:</strong> By training against multiple surrogate models simultaneously, SPECIOUS generates perturbations that generalize across architectures and tasks, unlike prior single-model attacks [15][24].</li>
+      </ol>
+
+      <p>We demonstrate that SPECIOUS preserves visual fidelity while achieving high fooling rates (>70%) on both classification and zero-shot generative benchmarks.</p>
+    </section>
+
+    <section id="literature">
+      <h2>Chapter 2 — Literature Survey</h2>
+
+      <h3>Style-Cloaking and Dataset-Poisoning Attacks</h3>
+      <ul>
+        <li><strong>Glaze’s Style Cloaks:</strong> Glaze crafts tiny RGB perturbations ("style cloaks") that artists can apply before sharing images, so that diffusion models trained on these cloaked versions learn a skewed style representation. In a large-scale user study, Glaze showed strong disruption but its effectiveness depends on models fine-tuned on cloaked data.</li>
+        <li><strong>Nightshade’s Prompt-Specific Poisoning:</strong> Nightshade takes a data-poisoning route [14] by injecting carefully crafted image–text pairs into the Stable Diffusion training set, such that fewer than 100 poisoned samples can hijack a model’s response to a specific prompt (e.g., making “a cat” generate flowers instead). These poison images are visually indistinguishable from authentic samples and can even “bleed through” to semantically related prompts. Yet because Nightshade requires access to and modification of the training pipeline, it cannot defend images shared against black-box, inference-only attacks.</li>
+        </ul>
+
+      <h3>Frequency-Domain Adversarial Perturbations</h3>
+      <p>Early work revealed that gradient-based adversarial deltas concentrate in high-frequency bands [9][25]—the fine edges and textures that convolutional networks heavily weight. Building on this, researchers have embedded spectral filtering layers inside defences to emphasize low-frequency content for robust recognition, effectively “damping” model sensitivity to perturbations. Other defences apply input transformations in the Fourier domain, such as mixing or removing select frequencies, to neutralize adversarial noise before classification. These techniques underscore the power of frequency analysis, but most target single architectures or rely on fixed, hand-crafted filters rather than learnable, adaptive masks.</p>
+
+      <h3>Perceptual Metrics in Adversarial Optimization</h3>
+      <p>To achieve “stealthy” attacks, perceptual fidelity is critical. The Learned Perceptual Image Patch Similarity (LPIPS) metric [18] aligns deep feature distances with human judgments, mapping differences onto a 0–1 scale. LPIPS has been used both as an evaluation metric and as a loss term during adversarial example generation, ensuring perturbations remain below human-noticeable thresholds. The Perceptual Sensitive Attack further integrates LPIPS constraints to maximize downstream task disruption under tight perceptual budgets, illustrating how perceptual losses can guide more effective black-box attacks. However, existing methods seldom jointly optimize LPIPS and multi-model feature distortion under a strict threshold.</p>
+
+      <h3>Y-Channel Specific Attacks</h3>
+      <p>Pestana et al. demonstrated that adversarial perturbations “prevail” in the luminance (Y) channel [11] of YCbCr space, achieving higher fooling rates for the same perturbation budget compared to RGB-space attacks. Their ResUpNet defence uses a Y-channel de-noising network to remove adversarial noise (from FGSM, PGD, DDN) while leaving chrominance untouched, thereby preserving color fidelity. This work highlights how human sensitivity to chrominance changes is lower, making Y-focused perturbations more “efficient”—yet most RGB-based defences ignore this channel specificity.</p>
+
+      <h3>Universal and Multi-Model Attacks</h3>
+      <p>Most adversarial studies focus on a single architecture. Transfer-based attacks sometimes generalize but lack perceptual guarantees. Very few methods optimize simultaneously against multiple surrogate models under perceptual constraints—this gap motivates SPECIOUS.</p>
+
+      <h3>Adversarial Patches and Physical-World Attacks</h3>
+      <p>Universal adversarial patches, introduced by Brown et al., can be printed or worn in the real world [22][26] yet still mislead classifiers toward a chosen label, demonstrating that perturbations need not be pixel-budget-limited to be effective. These patches remain robust under varied transformations—lighting, scale, viewpoint—making them a potent threat in safety-critical applications. Thys et al. later extended this idea to object detectors, showing that simple printouts affixed to clothing can hide pedestrians from surveillance systems like YOLOv2, confirming the real-world viability of patch attacks.</p>
+
+      <h3>Object-Detection Patch Attacks</h3>
+      <p>Liu et al. proposed DPatch, an adversarial patch attack [27] specifically targeting object detectors (Faster R-CNN, YOLO). Unlike earlier work focused on classifiers, DPatch simultaneously disrupts bounding-box regression and class scores, driving mAP on state-of-the-art detectors below 1% in a purely black-box setting. Its location independence and cross-model transferability highlight the vulnerability of modern detection architectures to patch-style attacks.</p>
+
+      <h3>Certified Robustness and Feature De-Noising</h3>
+      <p>Randomized smoothing offers provable ℓ₂-norm robustness certificates. Feature-denoising networks suppress noise in intermediate feature maps and improve adversarial robustness when combined with adversarial training.</p>
+    
+      <h3>Extending Certification to Transformations</h3>
+      <p>Fischer et al. extended randomized smoothing to cover parameterized image transformations (e.g., rotations, translations) [29], overcoming challenges of interpolation and rounding by introducing individual, distributional, and heuristic certificates for parameterized robustness. Their framework broadens the notion of certification beyond pixel-norm constraints to real-world transformations.</p>
+    
+      <h3>Feature De-Noising Networks</h3>
+      <p>Xie et al. observed that adversarial perturbations cause “noise” in intermediate feature maps [30], not just pixels, and built feature-denoising blocks (non-local means, median filters) into CNNs to suppress this noise. When combined with adversarial training, such networks doubled prior white-box PGD robustness on ImageNet (from ~27.9% to 55.7% accuracy under 10-step PGD) and won the CAAD 2018 defence track.</p>
+
+    </section>
+
+    <section id="methods">
+      <h2>Chapter 3 — Materials and Proposed Methodology</h2>
+
+      <p>Let’s begin by summarizing our approach: we trained a U-Net–based generator that operates in the Fourier domain of the Y channel (luminance) to produce high-frequency perturbations that disrupt multiple surrogate encoders (ResNet-50, CLIP ViT-B/32) while minimizing human perceptual distortion and keeping it below a strict LPIPS threshold [11][21][16][15][18]. A learnable high-pass mask focuses the U-Net on edges and textures, and our Specious Loss jointly optimizes perceptual similarity and feature distortion, with an exponential term ensuring positivity and a penalty enforcing imperceptibility [21][23][22].</p>
+
+      <figure>
+        <img src="images/architecture.png" alt="Figure 4.1: Working Flow Diagram of SPECIOUS">
+        <figcaption style="text-align: center;">Figure 4.1: Working Flow Diagram of SPECIOUS</figcaption>
+        </figure>
+
+      <h3>Data Preparation</h3>
+      <ol>
+        <li><strong>Dataset Used:</strong> We construct a balanced, 10,000–image training corpus by combining two diverse sources:
+            <ul>
+                <li><strong>PASCAL VOC 2017 (5,000 images):</strong> We sample 5,000 images at random from the PASCAL VOC 2007/2012 Train + Val splits, which together comprise approximately 11,540 images covering 20 object classes (e.g., person, vehicle, animal, furniture) in real-world scenes [31].</li>
+                <li><strong>"Best Artworks of All Time" by ikarus777 on Kaggle (5,000 images):</strong> This curated collection contains thousands of masterpieces spanning Baroque, Impressionism, Cubism, Surrealism, and other art movements. We randomly select 5,000 images to cover a spectrum of styles and textures [32].</li>
+            </ul>
+        </li>
+        <li><strong>Pre-processing steps:</strong>
+            <ul>
+                <li><strong>Resize</strong> all images to 224 × 224 via bicubic interpolation to match ResNet50 and CLIP’s Image Encoder input size [33].</li>
+                <li><strong>Normalize</strong> pixel intensities to the [0, 1] range and convert to tensors of shape 3(C) x 244(H) x 244(W) [34].</li>
+                <li>No further augmentations (flips, crops) are applied, so that each epoch sees the same data distribution; we train for 7 epochs over this 10,000-image set [31].</li>
+            </ul>
+        </li>
+        <li><strong>Rationale:</strong>
+            <ul>
+                <li>The PASCAL VOC split provides complex, real-world scenes that challenge both low- and high-frequency feature extraction [9].</li>
+                <li>The art dataset adds stylistic diversity, ensuring our perturbations generalize to both photographic and painterly textures [26].</li>
+                <li>Fixed resolution simplifies FFT block design and stabilizes training [21].</li>
+            </ul>
+        </li>
+      </ol>
+      
+      <h3>Model Architecture</h3>
+      <p>The architecture centers on a U-Net generator augmented with FFT/IFFT blocks for frequency-domain processing of the luminance channel [11][21].</p>
+      <ol>
+        <li>
+            <strong>U-Net Backbone:</strong> We adopt the original U-Net design by Ronneberger et al., featuring a symmetric contracting and expanding path with skip-connections:
+            <ul>
+                <li>
+                    <strong>Contracting Path:</strong> The encoder follows a hierarchical feature–extractor design: at each level, two consecutive 3 × 3 convolutions (with stride 1 and zero padding) extract local patterns, followed by a ReLU nonlinearity that introduces sparsity and mitigates vanishing gradients. Stacking two convolutions before pooling increases the effective receptive field, covering 5×5 pixels, while preserving fine-grained details. A 2 × 2 max-pool operation with stride 2 then halves spatial dimensions, enabling the network to aggregate context across larger regions and build progressively higher-level representations.
+                    <p>Skip-connections copy each convolutional feature map before pooling directly into the corresponding decoder block. This U-shaped information flow ensures that spatial information lost during down-sampling is restored during up-sampling, preventing overly coarse reconstructions and aiding gradient propagation.</p>
+                </li>
+                <li><strong>Bottleneck:</strong> At the network’s deepest point, feature maps reach their smallest spatial resolution (e.g., 14×14 for 224×224 input with four poolings). Here, two more 3 × 3 Conv–ReLU layers operate on the richest semantic features, maximizing the global receptive field—up to ~188×188 pixels—so that each output neuron “sees” nearly the entire input image. This global context is critical for generating perturbations that can mislead classifiers based on both local texture and broader composition.</li>
+                <li><strong>Expanding Path:</strong> The decoder mirrors the encoder: at each level, a 2 × 2 transposed convolution (a learnable up-sampling) doubles spatial dimensions, reconstructing finer resolution. The up-sampled feature map is concatenated with its encoder counterpart (from skip connection), fusing high-level semantics with low-level details. Two 3 × 3 Conv–ReLU layers then refine this merged representation. This symmetric expansion gradually recovers the original image size, culminating in a final 1 × 1 convolution that projects to a single‐channel perturbation ΔY, with Tanh bounding values in [–1,1].</li>
+                <li><strong>Output:</strong> A final 1 × 1 convolution maps to a single‐channel perturbation ΔY, followed by Tanh to constrain values to [–1, 1].</li>
+            </ul>
+            <p>This design excels at preserving fine details via skip-connections while providing large receptive fields for context.</p>
+        </li>
+        <li>
+            <strong>Capacity and Base Filters</strong>
+            <ul>
+                <li><strong>Base Filters:</strong> We set an initial width of 32 channels at the first Conv layer, doubling at each down‐sampling (32 → 64 → 128 → 256 → 512). This yields ~5 M parameters—suitable for 8 GB GPUs at 224 × 224 resolution.</li>
+                <li><strong>Scalability:</strong> For larger datasets or higher resolutions, base filters can be increased to 64 or 128, quadratically increasing capacity and model size. Hardware allowing, this enhances the network’s expressivity at the cost of memory and compute.</li>
+            </ul>
+        </li>
+      </ol>
+
+      <h3>Frequency-Domain Perturbation Block</h3>
+      <p>In contrast to spatial-domain attacks, our method explicitly operates in the frequency domain, leveraging classical Fourier analysis to target the edge and texture information that neural networks exploit.</p>
+      <ol>
+        <li>
+            <strong>Fundamentals of Image Fourier Decomposition:</strong> Every grayscale image Y (u, v) can be expressed as a sum of two-dimensional sinusoids via the 2D Discrete Fourier Transform (DFT) [35]:
+            <img src="images/DFT.JPG" alt="DFT Equation">
+            <p>Here, low indices (k, l) correspond to low frequencies (smooth variations), whereas high indices represent high frequencies (rapid changes, edges). Physically, this decomposition separates colour intensities into global luminance patterns versus fine-scale textures.</p>
+        </li>
+        <li><strong>Why High Frequencies Matter for Adversarial Attacks:</strong> Recent analyses show that modern CNNs exhibit a texture bias, relying heavily on high-frequency information for classification and recognition. Furthermore, adversarial perturbations introduced via gradient-based methods predominantly occupy high-frequency bands [36], subtly altering edges while remaining imperceptible in pixel space. By isolating these bands, attacks can maximize impact on model features with minimal perceptual cost.</li>
+        <li>
+            <strong>Luminance-Channel Focus:</strong> 
+            Human vision is more sensitive to luminance (brightness) changes than chrominance (colour) changes [6], yet adversarial efficacy peaks when perturbations concentrate on the Y channel of YCbCr space. Converting RGB to YCbCr:
+            <img src="images/luminance.JPG" alt="YCbCr Conversion Equation">
+            <p>Decouples intensity from colour, enabling our attack to focus solely on edges and textures without altering hue or saturation.</p>
+        </li>
+        <li>
+            <strong>Learnable High-Pass Mask:</strong>
+            high‐pass filtering uses a fixed cutoff radius ‘r’ in the centered frequency plane. We instead treat ‘r’ as a learnable parameter, allowing the network to select the most vulnerable frequency bands for each dataset adaptively. Formally, the mask is:
+            <img src="images/high pass filter.JPG" alt="High-Pass Mask Equation">
+            <p>where (H/2, W/2) marks the DC component location after the FFT Shift. During backpropagation, ∂M/∂r is nonzero at the mask boundary, enabling gradient‐based adjustment of ‘r’.</p>
+        </li>
+        <li>
+            <strong>End-to-End Frequency Path:</strong>
+            To enable frequency‐domain processing, we insert FFT transforms at the network’s input:
+            <ul>
+                <li>Compute the 2D Discrete Fourier Transform of the Y channel using Fast Fourier Transform (FFT).</li>
+                <li>Center the spectrum by shifting to align zero frequency at the map’s center.</li>
+                <li>After mask application, recover the spatial map via inverse shift and Inverse Fourier Transform.</li>
+                <li>The real component of the IFFT output is passed into the U-Net encoder, which is basically the High Frequency pass Masked Y Channel.</li>
+            </ul>
+            <p>By wrapping FFT/IFFT around the U-Net’s contracting path, the generator learns perturbations directly in high-frequency bands, focusing on those most salient to model features.</p>
+        </li>
+      </ol>
+
+      <h3>Specious Loss: Joint Perceptual–Feature Objective</h3>
+      <ol>
+        <li>
+            <strong>Designing:</strong> 
+            Our novel Specious Loss is designed to drive the generator to produce perturbations that are imperceptible to humans yet maximally disruptive to multiple surrogate encoders simultaneously. It combines three terms:
+            <ol>
+                <li>
+                    <strong>Perceptual Similarity (LPIPS):</strong>
+                    We measure human‐perceived similarity using the Learned Perceptual Image Patch Similarity (LPIPS) metric, which compares deep feature activations from a pre-trained network (e.g., AlexNet) and has been shown to correlate strongly with human judgments. Formally, given an original image x and the perturbed image x ̂,
+                    <img src="images/LPIPS.JPG" alt="LPIPS Equation">
+                    <p>where a score near 0 indicates near-perfect perceptual similarity, and values up to 1 indicate greater dissimilarity. By including LPIPS in our loss, we ensure that generated perturbations remain below human detection thresholds.</p>
+                </li>
+                <li>
+                    <strong>Feature Distortion (ResNet 50 & CLIP):</strong> 
+                    To disrupt model inference, we penalize the squared error between feature embeddings of x and x ̂ across two surrogate encoders(can also add more):
+                    <ul>
+                        <li><strong>ResNet-50</strong> pooled features Φ_resnet (∙)∈ R^2048 from the final average‐pool layer of a pre-trained ResNet 50.</li>
+                        <li><strong>CLIP ViT B/32</strong> vision embeddings Φ_clip (∙)∈ R^512  from the CLIP model’s vision transformer.</li>
+                    </ul>
+                    <p>We define the combined feature distortion as:</p>
+                    <img src="images/feature formula.JPG" alt="Feature Distortion Equation">
+                    <p>By selecting appropriate weights β_resnet, β_clip, we tune the relative emphasis on each surrogate.</p>
+                </li>
+                <li>
+                    <strong>Strict Positivity & Imperceptibility Penalty:</strong>
+                    To guarantee a positive‐valued loss surface, which stabilizes optimization and avoids negative plateaus, we wrap the perceptual and feature terms in an exponential:
+                    <img src="images/exp.JPG" alt="Exponential Loss Equation">
+                    <p>Finally, to enforce a hard upper bound on perceptual distortion, we add a hinge penalty whenever LPIPS exceeds a threshold ‘τ’ (perceptual threshold):</p>
+                    <img src="images/penalty.JPG" alt="Hinge Penalty Equation">
+                    <p>The full Specious Loss is thus:</p>
+                    <img src="images/specious loss.JPG" alt="Specious Loss Equation">
+                </li>
+            </ol>
+        </li>
+        <li>
+            <strong>Hyperparameter Settings:</strong>
+            In our experiments on 224×224 images over 7 epochs, we found the following values effective:
+            <ul>
+                <li><strong>α=2.0:</strong> Scales LPIPS to intensify perceptual fidelity.</li>
+                <li><strong>β_resnet=0.1, β_clip=1.0:</strong> We emphasize disrupting CLIP over ResNet, as CLIP features are more aligned with text‐conditioned generators and the latest Vision Models.</li>
+                <li><strong>τ=0.015:</strong> Keeps LPIPS below 0.02, a level generally imperceptible to human observers.</li>
+                <li><strong>λ=10.0:</strong> A strong penalty to discourage any breach of <strong>τ</strong>.</li>
+            </ul>
+            <p>These settings yielded an average LPIPS of <b>0.012</b>, the CLIP feature’s average cosine similarity drop of <b>0.345</b>, and the ResNet50’s average confidence drop of <b>0.1240</b> in our validation set, with negligible visual artifacts.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="experiments">
+      <h2>Chapter 4 — Experiments & Results</h2>
+
+      <p>We evaluated SPECIOUS on both classification (ResNet 50) and zero-shot retrieval (CLIP ViT B/32) tasks, as well as analyze training dynamics. All experiments use our 10,000 image corpus (5k Pascal VOC + 5k Artworks) at 224 × 224, base_filters=32, trained for 7 epochs, and for testing, we used the well-curated test set of 2,000 images (1k Pascal VOC + 1k Artworks).</p>
+
+      <h3>Training Dynamics</h3>
+      <figure>
+        <img src="images/training dynamics.png" alt="Figure 5.1.1: Smoothed LPIPS, Feature Loss, and Total Loss over Training Steps">
+        <figcaption style="text-align: center;">Figure 5.1.1: Plot of the smoothed LPIPS, feature loss, and total loss over ≈ 7,200 training steps (rolling window = 100)</figcaption>
+        <img src="images/training dynamics zoomed.png" alt="Figure 5.1.2: Zoomed in LPIPS over training steps">
+        <figcaption style="text-align: center;">Figure 5.1.2: Zoomed in LPIPS over training steps</figcaption>
+        </figure>
+
+      <ul>
+        <li><strong>LPIPS</strong> (blue) quickly rises from near zero to ~ 0.01 within 500 steps, then stabilizes around 0.009–0.011, well below our threshold τ = 0.015 (see zoomed LPIPS in Figure 5.1.2).</li>
+        <li><strong>Feature Loss</strong> (orange) increases sharply in the first 1,000 steps—driven largely by CLIP embedding distortion (β_clip = 5.0)—and plateaus near 0.20–0.22.</li>
+        <li><strong>Total Loss</strong> (green) smoothly decreases, settling at ~ 0.83 by the end of training, indicating a balance between perceptual and feature objectives (see the fluctuations in Figure 5.1.1).</li>
+      </ul>
+
+      <h3>CLIP Cosine Similarity Drop Distribution</h3>
+      <p>To quantify how much SPECIOUS perturbs CLIP representations, we compute the cosine similarity between the original and perturbed images’ CLIP ViT B/32 embeddings on 2,000 held-out images.</p>
+      <figure>
+        <img src="images/clip cosine drop.png" alt="Figure 5.2: The histogram and KDE of similarity drops">
+        <figcaption style="text-align: center;">Figure 5.2: The histogram and KDE of similarity drops</figcaption>
+      </figure>
+      <ul>
+        <li>Average drop of <b>0.345</b> in cosine similarity indicates substantial embedding shift (see Figure 5.2 for more clarity).</li>
+        <li>The distribution is roughly Gaussian with a very less standard deviation, with most drops between <b>0.25–0.45</b>, confirming consistent disruption across samples.</li>
+      </ul>
+
+      <h3>ResNet-50 Classification Results</h3>
+      <p>We tested on a set of 2,000 validation images (1k Pascal VOC + 1k Artworks), measuring whether the top 1 label changes (“fooled”) and how much confidence drops. </p>
+      <figure>
+        <img src="images/resnet 50 result.png" alt="Figure 5.3: Scatter plot of the data points showcasing whether they got fooled or not, along with their LPIPS and Confidence Drop, and a bar plot showcasing the Fooling Rate when got tested on ResNet50">
+        <figcaption style="text-align: center;">Figure 5.3: Scatter plot of the data points showcasing whether they got fooled or not, along with their LPIPS and Confidence Drop, and a bar plot showcasing the Fooling Rate when got tested on ResNet50</figcaption>
+      </figure>
+      <ul>
+        <li><strong>Fooling Rate: 80.2%</strong> of images have top 1 labels flipped under ResNet 50.</li>
+        <li><strong>Avg. LPIPS: 0.0047,</strong> far below τ, demonstrating imperceptibility.</li>
+        <li><strong>Avg. Confidence Drop: 0.1240,</strong> indicating a meaningful reduction in model certainty.</li>  
+      </ul>
+      <p>In the left scatter plot, green crosses (fooled) cluster at LPIPS ≈ 0.005 and confidence drops ≥ 0, while red circles (not fooled) often have negative drops (i.e., slight confidence increases). The bar chart on the right counts 1,605 fooled vs. 395 not fooled data points.</p>
+
+      <h3>CLIP Zero-Shot Classification</h3>
+      <p>Finally, we evaluate CLIP’s zero-shot classifier on CIFAR 100 prompts. Using 2,000 test images with 100 class templates.</p>
+        <figure>
+            <img src="images/clip result.png" alt="Figure 5.4: Scatter plot of the data points showcasing whether they got fooled or not, along with their LPIPS and Similarity Drop, and a bar plot showcasing the Fooling Rate when got tested on CLIP ViT B/32 Zero-Shot Classifier">
+            <figcaption style="text-align: center;">Figure 5.4: Scatter plot of the data points showcasing whether they got fooled or not, along with their LPIPS and Similarity Drop, and a bar plot showcasing the Fooling Rate when got tested on CLIP ViT B/32 Zero-Shot Classifier</figcaption>
+        </figure>
+        <ul>
+            <li><strong>Zero-Shot Fooling Rate: 73.0%</strong> of images change their top 1 zero-shot label post perturbation.</li>
+            <li><strong>Avg. ZS Confidence Drop: 0.2808</strong> </li>
+            <li><strong>Avg. LPIPS: again 0.345,</strong> confirming consistency across tasks.</li>
+        </ul>
+        <p>The scatter plot shows a clear upward trend in confidence drop for fooled images, and the bar chart indicates 1,459 fooled vs. 541 not fooled.</p>
+
+
+      <h3>Summary of Findings</h3>
+      <p>SPECIOUS achieves &gt;80% fooling on ResNet-50 and &gt;70% on CLIP zero-shot while maintaining LPIPS &lt;0.01. CLIP embedding drops average 0.345, demonstrating strong, universal feature disruption with minimal perceptual cost.</p>
+
+      <figure>
+        <figcaption style="text-align: center;">Table 1: Impact of SPECIOUS on Models</figcaption>
+      <table>
+        <thead>
+          <tr><th>Models</th><th>Fooling Rate (avg)</th><th>LPIPS (avg)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ResNet50</td><td>&gt;80%</td><td>&lt;0.01</td></tr>
+          <tr><td>CLIP ViT-B/32 ZS</td><td>&gt;70%</td><td>&lt;0.01</td></tr>
+        </tbody>
+      </table>
+      </figure>
+    </section>
+
+    <section id="conclusion">
+      <h2>Chapter 5 — Conclusion</h2>
+      <p>In this work, we introduced SPECIOUS (“Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates”), a novel defence mechanism that injects imperceptible, high-frequency perturbations into the Y channel of images to disrupt multiple black box encoders simultaneously. By combining a learnable high-pass mask in the Fourier domain with a U Net generator, SPECIOUS focuses its perturbations on edges and textures—features to which deep models are most sensitive. Training with our Specious Loss, which minimizes LPIPS (perceptual similarity) while maximizing squared‐error feature distortion on pre-trained ResNet 50 and CLIP ViT B/32 embeddings, yields perturbations that are nearly invisible to humans (LPIPS < 0.01) yet cause significant embedding shifts (avg. CLIP cosine drop = 0.345) and high fooling rates (> 80% on ResNet 50, > 70% on CLIP zero shot).</p>
+      <p>SPECIOUS advances the state of the art in several ways:</p>
+      <ol>
+        <li><strong>Universal, Multi-Model Defence:</strong> Unlike prior work that targets a single model or requires poisoning training data (e.g., Nightshade, Glaze), SPECIOUS operates at inference time and generalizes to diverse encoders without access to their weights.</li>
+        <li><strong>Frequency Domain Focus:</strong> By isolating high‐frequency content in the Y channel—a locus of adversarial vulnerability and human insensitivity—our method exploits spectral properties that both CNNs and transformers rely upon.</li>
+        <li><strong>Positive, Perceptually Bound Specious Loss:</strong> Our exponential‐hinge Specious Loss ensures a smooth, positive optimization surface and rigorously enforces LPIPS ≤ τ, addressing stability and imperceptibility simultaneously.</li>
+        <li><strong>Empirical Effectiveness:</strong> Extensive experiments on classification (ImageNet ResNet 50) and zero shot retrieval (CLIP CIFAR 100) demonstrate robust disruption of both CNN and vision language models, matching or exceeding many single model attacks and defences in the literature.</li>
+      </ol>
+    </section>
+
+    <section id="references">
+      <h2 style="text-align: center;">References</h2>
+      <div class="ref-list">
+        <ol class="references">
+            <li>AP News. (2025, April 28). ChatGPT’s Studio Ghibli AI trend highlights copyright concerns. Retrieved from <a href="https://apnews.com/article/studio-ghibli-chatgpt-images-hayao-miyazaki-openai-0f4cb487ec3042dd5b43ad47879b91f4">https://apnews.com/article/studio-ghibli-chatgpt-images-hayao-miyazaki-openai-0f4cb487ec3042dd5b43ad47879b91f4</a></li>
+            <li>Independent. (2025, April). ChatGPT’s viral Studio Ghibli-style images spark debate over creativity vs. copyright. Retrieved from <a href="https://www.independent.co.uk/arts-entertainment/films/news/studio-ghibli-chatgpt-openai-hayao-miyazaki-trend-copyright-b2723114.html">https://www.independent.co.uk/arts-entertainment/films/news/studio-ghibli-chatgpt-openai-hayao-miyazaki-trend-copyright-b2723114.html</a></li>
+            <li>Fox5NY. (2025, April). “Ghiblifying” goes viral, sparking copyright concerns. Retrieved from <a href="https://www.fox5ny.com/news/ghibli-style-chat-gpt">https://www.fox5ny.com/news/ghibli-style-chat-gpt</a></li>
+            <li>Business Insider. (2025, March). OpenAI is getting overwhelmed by ‘Ghiblified’ photo edits. Retrieved from <a href="https://www.businessinsider.com/ghibli-ai-trend-viral-response-heartwarming-2025-3">https://www.businessinsider.com/ghibli-ai-trend-viral-response-heartwarming-2025-3</a></li>
+            <li>Axios. (2025, May 13). AI copyright office report sparks new fight. Retrieved from <a href="https://www.axios.com/2025/05/13/ai-copyright-office-report-fight">https://www.axios.com/2025/05/13/ai-copyright-office-report-fight</a></li>
+            <li>Andersen, J., Smith, K., &amp; Lee, T. (2023). Data scraping in AI image corpora. <i>Journal of AI Ethics, 5</i>(2), 45–57.</li>
+            <li>O’Brien, M., &amp; Parvini, S. (2025, April). Moral injury among artists in the AI era. <i>Vox</i>.</li>
+            <li>Goodfellow, I., Shlens, J., &amp; Szegedy, C. (2015). Explaining and harnessing adversarial examples. <i>International Conference on Learning Representations (ICLR)</i>.</li>
+            <li>Qian, Y., Liu, Z., &amp; Zhou, Y. (2022). Toward feature-space adversarial attack in the frequency domain. <i>International Journal of Intelligent Systems, 37</i>(4), 407–424.</li>
+            <li>Huang, J., Guan, D., Xiao, A., &amp; Lu, S. (2021). RDA: Robust domain adaptation via Fourier adversarial attacking. <i>Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)</i>.</li>
+            <li>Pestana, C., Akhtar, N., Liu, W., Glance, D., &amp; Mian, A. (2020). Adversarial perturbations prevail in the Y-channel of the YCbCr color space. <i>arXiv preprint arXiv:2003.00883</i>.</li>
+            <li>Shan, S., Cryan, J., Wenger, E., Zheng, H., Hanocka, R., &amp; Zhao, B. Y. (2023). Glaze: Protecting artists from style mimicry by text-to-image models. <i>arXiv preprint arXiv:2302.04222</i>.</li>
+            <li>Shan, S., et al. (2023). User study and CLIP-based evaluation for Glaze: &gt;92% disruption under normal conditions, &gt;85% under adaptive attacks. <i>USENIX Security</i>.</li>
+            <li>Shan, S., Ding, W., Passananti, J., Wu, S., Zheng, H., &amp; Zhao, B. Y. (2023). Nightshade: Prompt-specific poisoning attacks on text-to-image generative models. <i>arXiv preprint arXiv:2310.13828</i>.</li>
+            <li>Tramèr, F., Kurakin, A., Papernot, N., Boneh, D., &amp; McDaniel, P. (2018). Ensemble adversarial training: Attacks and defenses. <i>arXiv preprint arXiv:1705.07205</i>.</li>
+            <li>Shan, S., et al. (2023). Nightshade poisoning requires a target label for prompt corruption. <i>arXiv preprint</i>.</li>
+            <li>Moosavi-Dezfooli, S.-M., Fawzi, A., &amp; Frossard, P. (2017). Universal adversarial perturbations. <i>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</i>.</li>
+            <li>Zhang, R., Isola, P., Efros, A. A., Shechtman, E., &amp; Wang, O. (2018). The unreasonable effectiveness of deep features as a perceptual metric. <i>CVPR</i>.</li>
+            <li>Wang, H., Wu, X., Huang, Z., &amp; Xing, E. P. (2020). High-frequency components explain CNN generalization. <i>CVPR</i>.</li>
+            <li>Cosgrove, C., &amp; Yuille, A. L. (2020). Adversarial examples for edge detection: They exist, and they transfer. <i>WACV</i>.</li>
+            <li>Harder, P., Pfreundt, F.-J., Keuper, M., &amp; Keuper, J. (2021). SpectralDefense: Detecting adversarial attacks on CNNs in the Fourier domain. <i>arXiv preprint arXiv:2103.03000</i>.</li>
+            <li>Brown, T. B., et al. (2020). Adversarial patches: A real-world attack on object detectors. <i>arXiv preprint arXiv:2002.08347</i>.</li>
+            <li>Goodfellow et al. (2015). LPIPS used as both metric and loss term—see ICLR 2015.</li>
+            <li>Fischer, M., et al. (2020). Extending certification to parameterized transformations. <i>arXiv preprint arXiv:2006.10729</i>.</li>
+            <li>Moosavi-Dezfooli et al. (2017). Universal adversarial perturbations show high-frequency vulnerability.</li>
+            <li>Liu, Y., Chen, X., Liu, C., &amp; Song, D. (2019). DPatch: Adversarial patch attack on object detectors. <i>arXiv preprint arXiv:1906.11897</i>.</li>
+            <li>Cohen, J., Rosenfeld, E., &amp; Kolter, J. Z. (2019). Certified adversarial robustness via randomized smoothing. <i>Proceedings of the 36th International Conference on Machine Learning (ICML)</i>.</li>
+            <li>Fischer et al. (2020). Parameterized certification.</li>
+            <li>Xie, C., Wu, Y., van der Maaten, L., Yuille, A., &amp; He, K. (2018). Feature denoising for enhancing adversarial robustness. <i>CVPR</i>.</li>
+            <li>Szegedy, C., et al. (2014). Intriguing properties of neural networks. <i>ICLR</i>.</li>
+            <li>Everingham, M., Van Gool, L., Williams, C. K. I., Winn, J., &amp; Zisserman, A. (2010). The PASCAL Visual Object Classes (VOC) Challenge. <i>International Journal of Computer Vision, 88</i>(2), 303–338.</li>
+            <li>Kaggle. (2023). Best Artworks of All Time by ikarus777. Retrieved from <a href="https://www.kaggle.com/datasets/ikarus777/best-artworks-of-all-time">https://www.kaggle.com/datasets/ikarus777/best-artworks-of-all-time</a></li>
+            <li>Simonyan, K., &amp; Zisserman, A. (2015). Very Deep Convolutional Networks for Large-Scale Image Recognition. <i>International Conference on Learning Representations (ICLR)</i>.</li>
+            <li>Paszke, A., et al. (2019). PyTorch: An imperative style, high-performance deep learning library. <i>Advances in Neural Information Processing Systems, 32</i>, 8024–8035.</li>
+            <li>Oppenheim, A. V., &amp; Schafer, R. W. (1989). Discrete-Time Signal Processing (2nd ed.). Prentice Hall.</li>
+            <li>Geirhos, R., Rubisch, P., Michaelis, C., Bethge, M., Wichmann, F. A., &amp; Brendel, W. (2019). ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness. <i>International Conference on Learning Representations (ICLR)</i>.</li>
+            <li>Rennie, S. J., Marcheret, E., Mroueh, Y., Ross, J., &amp; Goel, V. (2017). Self-critical sequence training for image captioning. <i>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</i>, 1179–1195.</li>
+            <li>Cortes, C., &amp; Vapnik, V. (1995). Support‐vector networks. <i>Machine Learning, 20</i>(3), 273–297.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="annexure">
+        <h2 style="text-align: center;">Annexure</h2>
+        <p><strong>Training Procedure and Hardware:</strong> In this section, we describe how SPECIOUS is trained end-to-end to learn effective, imperceptible perturbations.</p>
+
+        <ol type="1">
+        <li><strong>Data Loading and Batching:</strong>
+            <ol type="1">
+            <li><strong>Dataset Composition:</strong> 10,000 images total, comprising 5,000 from PASCAL VOC 2017 and 5,000 from “Best Artworks of All Time.”</li>
+            <li><strong>Image Size:</strong> All images resized to 224 × 224 via bicubic interpolation.</li>
+            <li><strong>Batch Size:</strong> 8 images per batch, which on an 8 GB GPU allows for the U Net with base filters=32 plus two surrogate encoders in memory.</li>
+            </ol>
+            <p>A standard PyTorch DataLoader shuffles the combined dataset each epoch and loads batches in parallel (num_workers=4) to maximize GPU utilization.</p>
+        </li>
+
+        <li><strong>Optimization Settings:</strong>
+            <ol type="1">
+            <li><strong>Optimizer:</strong> Adam with β₁=0.9, β₂=0.999 and weight decay=0.</li>
+            <li><strong>Learning Rate:</strong> 1×10⁻⁴ for all trainable parameters (U Net weights and the radial cutoff scalar).</li>
+            <li><strong>Epochs:</strong> 7 full passes over the 10,000 image dataset.</li>
+            <li><strong>Checkpointing:</strong>
+                <ol type="1">
+                <li><strong>Batch Checkpoints:</strong> every 200 batches save {epoch, batch, model_state, optimizer_state}.</li>
+                <li><strong>Epoch Checkpoints:</strong> at the end of each epoch, save a full-model dump.</li>
+                </ol>
+            </li>
+            </ol>
+        </li>
+
+        <li><strong>Forward and Backward Pass:</strong>
+            <ol type="1">
+            <li><strong>Forward</strong>
+                <ol type="1">
+                <li>Convert RGB → YCbCr, extract Y, apply FFT → high pass mask → IFFT → obtain YHF.</li>
+                <li>Pass YHF through the U Net to predict ΔY.</li>
+                <li>Reconstruct perturbed Y and convert back with original Cb, Cr to RGB → adv_img.</li>
+                </ol>
+            </li>
+            <li><strong>Loss Computation</strong>
+                <ol type="1">
+                <li>Compute LPIPS between orig_img and adv_img.</li>
+                <li>Extract ResNet 50 and CLIP embeddings for both, compute squared-error features.</li>
+                <li>Compute SpeciousLoss as described in the Methodology.</li>
+                </ol>
+            </li>
+            <li><strong>Backward</strong>
+                <ol type="1">
+                <li>Call <code>loss.backward()</code> to compute gradients.</li>
+                <li><code>optimizer.step()</code> updates both U Net weights and the learnable cutoff radius.</li>
+                <li>Zero gradients for next batch.</li>
+                </ol>
+            </li>
+            </ol>
+        </li>
+
+        <li><strong>Monitoring and Logging:</strong>
+            <ol type="1">
+            <li><strong>Metrics Tracked (per batch):</strong> lpips, resnet_loss, clip_loss, feature_loss, and total_loss.</li>
+            <li><strong>Visualization:</strong> After training, CSV logs of these metrics are used to plot convergence curves, verify that LPIPS remains under τ, and that feature distortion increases.</li>
+            </ol>
+        </li>
+        </ol>
+
+        <p><strong>Hardware and Scaling Notes:</strong></p>
+        <ol type="1">
+        <li>On an 8 GB GPU with base_filters=32, training completes in ~2 hours for 7 epochs.</li>
+        <li>If more capacity is available, increasing base_filters to 64 will roughly quadruple U Net parameters (~20 M) and improve perturbation richness, at the cost of longer training and higher memory usage.</li>
+        </ol>
+    </section>
+
+    <footer>
+      <p>HTML representation of the SPECIOUS paper. If you use our work in your research, please cite SPECIOUS.</p>
+    </footer>
+  </div>
+</body>
+</html>
