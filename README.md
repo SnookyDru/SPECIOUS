@@ -29,13 +29,7 @@ SPECIOUS is a universal, inference-time defence mechanism designed to protect vi
    cd specious
    ```
 
-2. **Create and Activate a Virtual Environment**:
-
-   ```bash
-   source .venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install Dependencies**:
+2. **Install Dependencies**:
 
    ```bash
    pip install -r requirements.txt
