@@ -1,4 +1,4 @@
-# SPECIOUS [[Paper]](https://snookydru.github.io/SPECIOUS/)
+# SPECIOUS [[Paper]](https://snookydru.github.io/SPECIOUS/) [[Working Demo]]()
 
 **Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates** 
 
@@ -25,15 +25,14 @@ SPECIOUS is a universal, inference-time defence mechanism designed to protect vi
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/yourusername/specious.git
+   git clone https://github.com/SnookyDru/SPECIOUS.git
    cd specious
    ```
 
 2. **Create and Activate a Virtual Environment**:
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source .venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install Dependencies**:
@@ -47,39 +46,19 @@ SPECIOUS is a universal, inference-time defence mechanism designed to protect vi
 ## Usage
 
 1. **Prepare Your Image**:
-   Ensure your input image is in a supported format (e.g., JPEG, PNG).
+   Ensure your input image is in a supported format (e.g., JPEG, PNG, JPG).
 
 2. **Apply SPECIOUS Perturbation**:
 
-   ```bash
-   python apply_specious.py --input path_to_image.jpg --output path_to_output.jpg
-   ```
+   Use run.py script and change the path to the image and trained model's .pt file which you can find in the development folder.
 
-   This script will generate a perturbed image that maintains visual fidelity while disrupting feature embeddings.
-
-3. **Evaluate Perturbation Effectiveness**:
-   Use the provided evaluation scripts to assess the impact on surrogate models.
+   This script will export the intermediate changes to the image and as well as the final perturbed image in the output folder and also will print the evaluation metrics lik LPIPS, Feature Distortion, etc. in the terminal.
 
 ---
 
 ## Citation
 
-If you use SPECIOUS in your research or projects, please cite:
-
-```bibtex
-@article{your2025specious,
-  title={SPECIOUS: Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates},
-  author={Your Name and Collaborators},
-  journal={Journal Name},
-  year={2025},
-  volume={X},
-  number={Y},
-  pages={Z},
-  publisher={Publisher}
-}
-```
-
-
+If you use SPECIOUS in your research or projects, please cite our website: https://snookydru.github.io/SPECIOUS/
 
 ---
 
