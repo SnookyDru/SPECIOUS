@@ -173,7 +173,7 @@ if uploaded:
     lpips_val = lpips_fn(orig_lp, adv_lp).item()
 
     ssim = StructuralSimilarityIndexMeasure().to(DEVICE)
-    psnr = PeakSignalNoiseRatio().to(DEVICE)
+    psnr = PeakSignalNoiseRatio(data_range=1.0).to(DEVICE)
     ssim_val = ssim(tensor, perturbed.unsqueeze(0)).item()
     psnr_val = psnr(tensor, perturbed.unsqueeze(0)).item()
 
