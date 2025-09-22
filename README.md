@@ -13,19 +13,19 @@ SPECIOUS is a universal, inference-time defence mechanism designed to protect vi
 
 ## ✨ Features
 
-* **🔒 Model-Agnostic Protection**
+* **🔒 Model-Agnostic Protection**:
   Robust against diverse architectures such as *ResNet-50* and *CLIP ViT-B/32*.
 
-* **🏷️ Label-Free Perturbations**
+* **🏷️ Label-Free Perturbations**:
   Generates perturbations without requiring predefined labels or prompts.
 
-* **⚖️ Dual-Objective Loss**
+* **⚖️ Dual-Objective Loss**:
   Optimizes a balance between perceptual fidelity (*LPIPS*) and feature space distortion.
 
-* **🌐 Frequency-Domain Manipulation**
+* **🌐 Frequency-Domain Manipulation**:
   Leverages learnable high-pass filters in the Fourier domain for imperceptible modifications.
 
-* **💡 Y-Channel Focused**
+* **💡 Y-Channel Focused**:
   Restricts perturbations to the luminance channel, ensuring natural color preservation.
 
 
