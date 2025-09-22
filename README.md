@@ -8,15 +8,26 @@
 
 SPECIOUS is a universal, inference-time defence mechanism designed to protect visual artworks from unauthorized AI-driven style mimicry. It generates imperceptible perturbations in the frequency domain, targeting the luminance (Y) channel, to disrupt feature embeddings across various surrogate models without compromising visual quality
 
+
 ---
 
-## Features
+## ✨ Features
 
-* **Model-Agnostic Protection**: Effective across multiple architectures, including ResNet-50 and CLIP ViT-B/32.
-* **Label-Free Perturbations**: No need for specific target labels or prompts.
-* **Dual-Objective Loss Function**: Balances perceptual fidelity (LPIPS) with feature space distortion.
-* **Frequency-Domain Manipulation**: Applies learnable high-pass filters in the Fourier domain.
-* **Y-Channel Focused**: Perturbations are confined to the luminance channel, preserving color fidelity.
+* **🔒 Model-Agnostic Protection**
+  Robust against diverse architectures such as *ResNet-50* and *CLIP ViT-B/32*.
+
+* **🏷️ Label-Free Perturbations**
+  Generates perturbations without requiring predefined labels or prompts.
+
+* **⚖️ Dual-Objective Loss**
+  Optimizes a balance between perceptual fidelity (*LPIPS*) and feature space distortion.
+
+* **🌐 Frequency-Domain Manipulation**
+  Leverages learnable high-pass filters in the Fourier domain for imperceptible modifications.
+
+* **💡 Y-Channel Focused**
+  Restricts perturbations to the luminance channel, ensuring natural color preservation.
+
 
 ---
 
