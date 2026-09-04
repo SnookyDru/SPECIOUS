@@ -1,4 +1,4 @@
-# SPECIOUS [[Paper]](https://snookydru.github.io/SPECIOUS/) [[Working Demo]]()
+# SPECIOUS [[Paper]](https://dhruvdidthat.github.io/SPECIOUS/) [[Working Demo]]()
 
 **Spectral Perturbation Engine for Contrastive Inference Over Universal Surrogates** 
 
